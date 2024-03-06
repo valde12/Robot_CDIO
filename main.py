@@ -27,13 +27,13 @@ def turn(angle, speed):
     gyro_sensor.reset_angle(0)
     if angle < 0:
         while gyro_sensor.angle() > angle:
-            left_motor.run(speed=(-1 * speed))
-            right_motor.run(speed=speed)
+            left_motor.run(speed= speed)
+            right_motor.run(speed=(-1 * speed))
             wait(10)
     elif angle > 0:  
         while gyro_sensor.angle() < angle:
-            left_motor.run(speed=speed)
-            right_motor.run(speed=(-1 * speed))
+            left_motor.run(speed=(-1 * speed))
+            right_motor.run(speed=speed)
             wait(10)  
     else:
         print("Error: no angle chosen")
@@ -50,17 +50,20 @@ def drive(distance, robotSpeed):
     if distance < 0: # move backwards
         while robot.distance() > distance:
             reverseSpeed = -1 * robotSpeed        
-            angle_correction = -1 * (PROPORTIONAL_GAIN * gyro_sensor.angle())
+            angle_correction = 1 * (PROPORTIONAL_GAIN * gyro_sensor.angle())
             robot.drive(reverseSpeed, angle_correction) 
             wait(10)
     elif distance > 0: # move forwards             
         while robot.distance() < distance:
-            angle_correction = -1 * PROPORTIONAL_GAIN * gyro_sensor.angle()
+            angle_correction = 1 * PROPORTIONAL_GAIN * gyro_sensor.angle()
             robot.drive(robotSpeed, angle_correction) 
             wait(10)            
     robot.stop()
 
-drive(1000, 200)
+drive(1000, 500)
+turn(180, 200)
+drive(1000, 500)
+
 
 
 # Stop the motors at the end
