@@ -20,90 +20,60 @@ robot.settings(straight_speed=200, straight_acceleration=100, turn_rate=100)
 
 gyro_sensor = GyroSensor(Port.S1)
 
+# Function to simulate getting the ball position
 def get_ball_position():
-    # OpenCV Kode:
-    # F.eks:
-    # Capture a frame and process it to get the ball position
-    # ball_x, ball_y = process_frame(capture_frame())
-    ball_x, ball_y = 0, 0  # Erstat denne linje med kode for at finde bolden
+    # Simulate getting ball position relative to the center of the screen
+    ball_x = np.random.randint(-50, 50)  # Random x-coordinate relative to the center
+    ball_y = np.random.randint(-50, 50)  # Random y-coordinate relative to the center
     return ball_x, ball_y
 
-
+# Function to simulate driving towards the ball
 def drive_towards_ball(target_x, current_x, robot_speed, angle_correction):
     if target_x is not None:
-        # Calculate the difference between the target and current positions
+        # Calculate the error between the target and current positions
         error = target_x - current_x
 
         # Adjust the steering based on the error (proportional control)
         correction = angle_correction * error
 
-        # Drive the robot with the adjusted steering
-        robot.drive(robot_speed, correction)
-        wait(10)
-
-# angle = degrees to turn, speed = mm/s
-def turn(angle, speed):
-    gyro_sensor.reset_angle(0)
-    if angle < 0:
-        while gyro_sensor.angle() > angle:
-            left_motor.run(speed=speed)
-            right_motor.run(speed=(-1 * speed))
-            wait(10)
-    elif angle > 0:
-        while gyro_sensor.angle() < angle:
-            left_motor.run(speed=(-1 * speed))
-            right_motor.run(speed=speed)
-            wait(10)
-    else:
-        print("Error: no angle chosen")
-
-    left_motor.brake()
-    right_motor.brake()
-
-# distance = mm, robotSpeed = mm/s
-def drive(distance, robot_speed):
-    robot.reset()
-    gyro_sensor.reset_angle(0)
-
-    PROPORTIONAL_GAIN = 1.1
-    if distance < 0:  # move backwards
-        while robot.distance() > distance:
-            reverse_speed = -1 * robot_speed
-            angle_correction = 1 * (PROPORTIONAL_GAIN * gyro_sensor.angle())
-            robot.drive(reverse_speed, angle_correction)
-            wait(10)
-    elif distance > 0:  # move forwards
-        while robot.distance() < distance:
-            angle_correction = 1 * PROPORTIONAL_GAIN * gyro_sensor.angle()
-            robot.drive(robot_speed, angle_correction)
-            wait(10)
-    robot.stop()
+        # Simulate driving the robot with the adjusted steering
+        print("Driving towards ball...")
+        print(f"Target X: {target_x}, Current X: {current_x}, Correction: {correction}")
+        # Code to actually drive the robot here (not implemented in simulation)
 
 # Main program
 robot_speed = 500
 drive_distance = 1000
 
-# Drive towards the ball for the specified distance
-while robot.distance() < drive_distance:
-    # Get the current ball position
+# Simulate driving towards the ball for the specified distance
+while True:  # Simulate driving for a certain distance (infinite loop for simulation)
+    # Get the current ball position (simulate)
     ball_x, ball_y = get_ball_position()
 
-    # Drive towards the ball
-    drive_towards_ball(ball_x, ev3.screen.width // 2, robot_speed, PROPORTIONAL_GAIN)
+    # Simulate driving towards the ball
+    drive_towards_ball(ball_x, 0, robot_speed, 1)
 
-# Stop the robot
-robot.stop()
+    # Simulate stopping the robot after reaching the specified distance
+    if abs(ball_x) < 10:  # Stop when close enough to the ball (for simulation)
+        print("Reached the ball!")
+        break
 
-# Turn 180 degrees
-turn(180, 200)
+# Turn 180 degrees (not simulated)
+print("Turning 180 degrees...")
+# Code to turn the robot here (not implemented in simulation)
 
-# Drive towards the ball again for the specified distance
-while robot.distance() < drive_distance:
-    # Get the current ball position
+# Simulate driving towards the ball again for the specified distance
+while True:  # Simulate driving for a certain distance (infinite loop for simulation)
+    # Get the current ball position (simulate)
     ball_x, ball_y = get_ball_position()
 
-    # Drive towards the ball
-    drive_towards_ball(ball_x, ev3.screen.width // 2, robot_speed, PROPORTIONAL_GAIN)
+    # Simulate driving towards the ball
+    drive_towards_ball(ball_x, 0, robot_speed, 1)
 
-# Stop the robot
-robot.stop()
+    # Simulate stopping the robot after reaching the specified distance
+    if abs(ball_x) < 10:  # Stop when close enough to the ball (for simulation)
+        print("Reached the ball again!")
+        break
+
+# Stop the robot (not simulated)
+print("Robot stopped.")
