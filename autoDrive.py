@@ -1,9 +1,11 @@
 #!/usr/bin/env pybricks-micropython
+import math
+
 from pybricks.hubs import EV3Brick
 from pybricks.ev3devices import Motor, GyroSensor
+from pybricks.parameters import Port
 from pybricks.robotics import DriveBase
 from pybricks.tools import wait
-import cv2
 import numpy as np
 
 # Initialize the EV3 Brick
@@ -19,28 +21,6 @@ robot = DriveBase(left_motor, right_motor, wheel_diameter=40, axle_track=110)
 robot.settings(straight_speed=200, straight_acceleration=100, turn_rate=100)
 
 gyro_sensor = GyroSensor(Port.S1)
-
-def get_ball_position():
-    # OpenCV Kode:
-    # F.eks:
-    # Capture a frame and process it to get the ball position
-    # ball_x, ball_y = process_frame(capture_frame())
-    ball_x, ball_y = 0, 0  # Erstat denne linje med kode for at finde bolden
-    return ball_x, ball_y
-
-
-def drive_towards_ball(target_x, current_x, robot_speed, angle_correction):
-    if target_x is not None:
-        # Calculate the difference between the target and current positions
-        error = target_x - current_x
-
-        # Adjust the steering based on the error (proportional control)
-        correction = angle_correction * error
-
-        # Drive the robot with the adjusted steering
-        robot.drive(robot_speed, correction)
-        wait(10)
-
 # angle = degrees to turn, speed = mm/s
 def turn(angle, speed):
     gyro_sensor.reset_angle(0)
@@ -79,31 +59,52 @@ def drive(distance, robot_speed):
             wait(10)
     robot.stop()
 
-# Main program
-robot_speed = 500
-drive_distance = 1000
 
-# Drive towards the ball for the specified distance
-while robot.distance() < drive_distance:
-    # Get the current ball position
-    ball_x, ball_y = get_ball_position()
+def navigate_to_ball(vectors, square_size):
+    robot_heading = get_robot_heading()
+    for vector in vectors:
+        angle_to_turn = get_angle_to_turn(robot_heading, vector)
+        distance_to_drive = get_distance_to_drive(vector, square_size)
 
-    # Drive towards the ball
-    drive_towards_ball(ball_x, ev3.screen.width // 2, robot_speed, PROPORTIONAL_GAIN)
+        # Turn the robot to the correct angle
+        turn(angle_to_turn, 200)
 
-# Stop the robot
-robot.stop()
+        # Drive the robot to the target distance
+        drive(distance_to_drive, 200)
 
-# Turn 180 degrees
-turn(180, 200)
+        # Update the robot's position
+        robot_heading = vector
 
-# Drive towards the ball again for the specified distance
-while robot.distance() < drive_distance:
-    # Get the current ball position
-    ball_x, ball_y = get_ball_position()
+def get_robot_heading():
+    return get_current_heading()
 
-    # Drive towards the ball
-    drive_towards_ball(ball_x, ev3.screen.width // 2, robot_speed, PROPORTIONAL_GAIN)
+def get_distance_to_drive(vector, square_size):
+    distance_to_drive = math.sqrt(vector[0] ** 2 + vector[1] ** 2) * square_size
+    return distance_to_drive
+
+def get_angle_to_turn(robot_heading, pointer_vector):
+    dx = pointer_vector[0] - robot_heading[0]
+    dy = pointer_vector[1] - robot_heading[1]
+    angle_to_turn = math.degrees(math.atan2(dy, dx))
+    return angle_to_turn
+
+def auto_drive(list_of_list_of_vectors, square_size):
+    for vectors in list_of_list_of_vectors:
+        navigate_to_ball(vectors, square_size)
+        pick_up_ball()
+
+
+def pick_up_ball():
+    pass
+def get_current_heading(): # Replace with real function, this is a placeholder
+    return (0, 0)
+# List of vectors representing the positions of the golf balls
+vectors = [[[2, 0], [3, 2], [1, 5]],[[2, 0], [3, 2], [1, 5]]]
+
+# Starting position of the robot
+robot_position = (0, 0)
+
+auto_drive(vectors, 100)
 
 # Stop the robot
 robot.stop()
