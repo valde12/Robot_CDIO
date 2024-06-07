@@ -89,8 +89,10 @@ def get_angle_to_turn(robot_heading, pointer_vector):
     return angle_to_turn
 
 def auto_drive(list_of_list_of_vectors, square_size):
-    for vectors in list_of_list_of_vectors:
-        navigate_to_ball(vectors, square_size)
+    if (len(list_of_list_of_vectors)):
+        return
+    for list_of_vectors in list_of_list_of_vectors:
+        navigate_to_ball(list_of_vectors, square_size)
         pick_up_ball()
 
 
