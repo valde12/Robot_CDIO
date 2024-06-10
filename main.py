@@ -13,6 +13,7 @@ ev3 = EV3Brick()
 # Initialize the motors connected to the wheels
 left_motor = Motor(Port.A)
 right_motor = Motor(Port.C)
+small_motor = Motor(Port.B)
 
 # Create a DriveBase object with the initialized motors
 # Adjust the wheel diameter and axle track according to your robot design
@@ -27,13 +28,13 @@ def turn(angle, speed):
     gyro_sensor.reset_angle(0)
     if angle < 0:
         while gyro_sensor.angle() > angle:
-            left_motor.run(speed= speed)
-            right_motor.run(speed=(-1 * speed))
+            left_motor.run(speed=(-1 * speed))
+            right_motor.run(speed=speed)
             wait(10)
     elif angle > 0:  
         while gyro_sensor.angle() < angle:
-            left_motor.run(speed=(-1 * speed))
-            right_motor.run(speed=speed)
+            left_motor.run(speed=speed)
+            right_motor.run(speed=(-1 * speed))
             wait(10)  
     else:
         print("Error: no angle chosen")
@@ -50,21 +51,20 @@ def drive(distance, robotSpeed):
     if distance < 0: # move backwards
         while robot.distance() > distance:
             reverseSpeed = -1 * robotSpeed        
-            angle_correction = 1 * (PROPORTIONAL_GAIN * gyro_sensor.angle())
+            angle_correction = -1 * (PROPORTIONAL_GAIN * gyro_sensor.angle())
             robot.drive(reverseSpeed, angle_correction) 
             wait(10)
     elif distance > 0: # move forwards             
         while robot.distance() < distance:
-            angle_correction = 1 * PROPORTIONAL_GAIN * gyro_sensor.angle()
+            angle_correction = -1 * PROPORTIONAL_GAIN * gyro_sensor.angle()
             robot.drive(robotSpeed, angle_correction) 
             wait(10)            
     robot.stop()
 
-drive(1000, 500)
-turn(180, 200)
-drive(1000, 500)
-
-
-
+drive(100, 50)
+small_motor.run(-300)
+wait(10000)
+small_motor.run(700)
+wait(10000)
 # Stop the motors at the end
 robot.stop()
