@@ -22,6 +22,10 @@ robot.settings(straight_speed=200, straight_acceleration=100, turn_rate=100)
 
 gyro_sensor = GyroSensor(Port.S1)
 # angle = degrees to turn, speed = mm/s
+
+
+w
+
 def turn(angle, speed):
     gyro_sensor.reset_angle(0)
     if angle < 0:
@@ -39,6 +43,7 @@ def turn(angle, speed):
 
     left_motor.brake()
     right_motor.brake()
+
 
 # distance = mm, robotSpeed = mm/s
 def drive(distance, robot_speed):
@@ -75,12 +80,15 @@ def navigate_to_ball(vectors, square_size):
         # Update the robot's position
         robot_heading = vector
 
+
 def get_robot_heading():
     return get_current_heading()
+
 
 def get_distance_to_drive(vector, square_size):
     distance_to_drive = math.sqrt(vector[0] ** 2 + vector[1] ** 2) * square_size
     return distance_to_drive
+
 
 def get_angle_to_turn(robot_heading, pointer_vector):
     robot_heading_distance = math.sqrt(robot_heading[0] ** 2 + robot_heading[1] ** 2)
@@ -95,6 +103,7 @@ def get_angle_to_turn(robot_heading, pointer_vector):
         angle_to_turn = -angle_to_turn
     return angle_to_turn
 
+
 def auto_drive(list_of_list_of_vectors, square_size):
     for list_of_vectors in list_of_list_of_vectors:
         navigate_to_ball(list_of_vectors, square_size)
@@ -105,10 +114,30 @@ def auto_drive(list_of_list_of_vectors, square_size):
 def pick_up_ball():
     small_motor.run(-500)
 
+
+def calculate_square_size(amount_of_squares_length, amount_of_squares_width):
+    length_size = 180
+    width_size = 120
+    square_size_length = length_size / amount_of_squares_length
+    square_size_width = width_size / amount_of_squares_width
+    square_size = (square_size_length + square_size_width) / 2
+
+    return square_size
+
+
+def calibration_move(former_heading, new_heading):
+    former_heading = get_robot_heading()
+    drive(2000,300)
+    new_heading = get_robot_heading()
+    return new_heading
+
+
 def get_current_heading(): # Replace with real function, this is a placeholder
     return [0, 1]
+
+
 # List of vectors representing the positions of the golf balls
-vectors = [[[2, 0] , [1 , 3] , [-1, -2], [-1,3]]]
+vectors = [[[2,0] , [1,3] , [-1,-2], [-1,3]]]
 
 # Starting position of the robot
 robot_position = (0, 0)
